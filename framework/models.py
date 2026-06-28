@@ -16,7 +16,7 @@ class Benchmark:
     constraints: Dict[str, Any]
     expected_behavior: List[str]
     evaluation_criteria: Dict[str, List[str]]
-    pass_criteria: Dict[str, List[str]]
+    pass_criteria: List[str]
     failure_conditions: List[str]
     notes: List[str]
 
