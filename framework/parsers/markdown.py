@@ -1,9 +1,14 @@
 """Module for parsing sections from markdown bodies."""
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 # pyrefly: ignore [missing-import]
 from markdown_it import MarkdownIt
+from framework.exceptions import MarkdownParseError
+from framework.models import ParsedSections
+
+# Single shared parser instance at the module level to avoid repeated construction
+_MD = MarkdownIt()
 
 
 @dataclass
@@ -16,8 +21,26 @@ class Heading:
     end_line: int
 
 
-def parse_sections(content: str) -> Dict[str, str]:
-    """Splits a markdown document body into sections based on top-level headings.
+def _require_section(sections: Dict[str, str], name: str) -> str:
+    """Ensures a required section is present in sections dictionary.
+
+    Args:
+        sections: Dictionary of headings to raw contents.
+        name: Name of the required section.
+
+    Returns:
+        The content of the required section.
+
+    Raises:
+        MarkdownParseError: If the section is missing.
+    """
+    if name not in sections:
+        raise MarkdownParseError(f"Missing required section: '{name}'")
+    return sections[name]
+
+
+def parse_sections(content: str) -> ParsedSections:
+    """Splits a markdown document body into sections and returns ParsedSections.
 
     Automatically detects the highest heading level (H1, H2, etc.) present in
     the document and splits the text into sections using those headings.
@@ -26,11 +49,12 @@ def parse_sections(content: str) -> Dict[str, str]:
         content: The raw markdown content body (without frontmatter).
 
     Returns:
-        A dictionary mapping each heading's text to its corresponding raw
-        markdown content.
+        A ParsedSections dataclass containing raw markdown text for each section.
+
+    Raises:
+        MarkdownParseError: If any required section is missing.
     """
-    md = MarkdownIt()
-    tokens = md.parse(content)
+    tokens = _MD.parse(content)
     lines = content.splitlines()
 
     # Gather all headings and their line offsets using a simple stateful pass
@@ -56,7 +80,7 @@ def parse_sections(content: str) -> Dict[str, str]:
                 current_heading = None
 
     if not headings:
-        return {}
+        raise MarkdownParseError("No headings found in the markdown body")
 
     # Identify the primary (highest-level) headings to use as section splitters
     primary_level = min(h.level for h in headings)
@@ -76,4 +100,23 @@ def parse_sections(content: str) -> Dict[str, str]:
         section_content = "\n".join(lines[content_start:content_end]).strip()
         sections[heading.text] = section_content
 
-    return sections
+    # Validate and map to ParsedSections dataclass
+    description = _require_section(sections, "Description")
+    prompt = _require_section(sections, "User Prompt")
+    constraints = _require_section(sections, "Extracted Constraints")
+    expected_behavior = _require_section(sections, "Expected Behaviour")
+    evaluation_criteria = _require_section(sections, "Evaluation Criteria")
+    pass_criteria = _require_section(sections, "Pass Criteria")
+    failure_conditions = _require_section(sections, "Failure Conditions")
+    notes = sections.get("Notes")
+
+    return ParsedSections(
+        description=description,
+        prompt=prompt,
+        constraints=constraints,
+        expected_behavior=expected_behavior,
+        evaluation_criteria=evaluation_criteria,
+        pass_criteria=pass_criteria,
+        failure_conditions=failure_conditions,
+        notes=notes,
+    )

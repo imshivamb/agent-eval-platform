@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -55,3 +55,26 @@ class EvaluationProfile:
 
     name: str
     weights: Dict[str, float]
+
+
+@dataclass
+class ParsedSections:
+    """Represents the raw, un-transformed markdown sections parsed from a file."""
+
+    description: str
+    prompt: str
+    constraints: str
+    expected_behavior: str
+    evaluation_criteria: str
+    pass_criteria: str
+    failure_conditions: str
+    notes: Optional[str] = None
+
+
+@dataclass
+class ParsedBenchmark:
+    """Combines raw metadata and raw parsed sections before transformation."""
+
+    metadata: Dict[str, Any]
+    sections: ParsedSections
+

@@ -2,11 +2,7 @@
 
 from typing import Any, Dict, Tuple
 import frontmatter
-
-
-class FrontmatterParseError(ValueError):
-    """Raised when frontmatter is malformed or invalid."""
-    pass
+from framework.exceptions import FrontmatterParseError
 
 
 def parse_frontmatter(content: str) -> Tuple[Dict[str, Any], str]:

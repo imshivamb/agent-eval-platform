@@ -1,12 +1,25 @@
-# Budget Constraint
+---
 
-## Description
+benchmark_id: travel-planning-budget
+name: Travel Planning Budget
+agent_type: travel-agent
+profile: travel-agent
+version: 1.0
+difficulty: intermediate
+tags:
 
-This scenario evaluates whether an AI travel-planning agent can generate a realistic and well-structured itinerary while operating within a fixed budget. The objective is to determine whether the agent can satisfy financial constraints without significantly compromising planning quality, factual accuracy, or personalization. The scenario also evaluates the agent's ability to make appropriate trade-offs when resources are limited.
+* budget
+* itinerary
+* planning
+* personalization
 
 ---
 
-## User Prompt
+# Description
+
+This scenario evaluates whether an AI travel-planning agent can generate a realistic and well-structured itinerary while operating within a fixed budget. The objective is to determine whether the agent can satisfy financial constraints without significantly compromising planning quality, factual accuracy, or personalization. The scenario also evaluates the agent's ability to make appropriate trade-offs when resources are limited.
+
+# User Prompt
 
 I am planning my first trip to South Korea and Japan in October. I will be travelling for approximately 28–30 days, with one week in South Korea and the remaining three weeks in Japan.
 
@@ -16,9 +29,7 @@ I enjoy photography, cafés, thrift shopping, and exploring neighborhoods beyond
 
 Please create a detailed itinerary that respects my budget while maximizing the overall travel experience.
 
----
-
-## Extracted Constraints
+# Extracted Constraints
 
 ```yaml
 Duration:
@@ -61,11 +72,7 @@ Shopping Budget:
   Separate from travel budget
 ```
 
----
-
-## Expected Behaviour
-
-A successful travel-planning agent should:
+# Expected Behaviour
 
 * Respect the total travel budget of ₹250,000 (excluding shopping expenses).
 * Produce a realistic itinerary spanning approximately 28–30 days across South Korea and Japan.
@@ -76,62 +83,47 @@ A successful travel-planning agent should:
 * Consider seasonal conditions when determining the travel sequence and activity recommendations.
 * Present factual and verifiable travel information throughout the itinerary.
 
----
+# Evaluation Criteria
 
-## Evaluation Criteria
-
-### Constraint Satisfaction
+## Constraint Satisfaction
 
 * The itinerary respects the specified travel budget.
 * The itinerary satisfies the requested trip duration and destinations.
 * The recommended accommodation aligns with the user's stated preferences.
 
-### Planning Quality
+## Planning Quality
 
 * The itinerary follows a logical and geographically efficient route.
 * Unnecessary accommodation changes are minimized.
 * The schedule balances travel, remote work, and sightseeing.
 
-### Information Accuracy
+## Information Accuracy
 
 * Prices, travel times, and factual information are accurate and obtained from reliable sources where possible.
 * Recommendations reflect current travel conditions and availability.
 
-### Personalization
+## Personalization
 
 * Recommendations align with the user's interests, including photography, cafés, thrift shopping, and local culture.
 * The itinerary reflects the user's preferred travel style rather than providing a generic tourist plan.
 
-### Adaptability
+## Adaptability
 
 * Not evaluated in this scenario.
 
----
-
-## Pass Criteria
-
-For this scenario to be considered successful, the generated itinerary should satisfy the following conditions.
-
-### Mandatory Criteria
+# Pass Criteria
 
 * Remains within the specified travel budget (or within an acceptable tolerance).
 * Covers the requested destinations within the specified travel duration.
 * Produces a geographically feasible and realistic travel route.
 * Respects the user's explicit constraints, including remote work requirements and accommodation preferences.
 * Incorporates the user's stated interests into the itinerary.
-
-### Quality Criteria
-
 * Recommends accommodations that provide good value rather than simply minimizing cost.
 * Provides multiple accommodation options where appropriate, allowing users to make informed decisions.
 * Makes balanced trade-offs between budget, convenience, comfort, and overall travel experience.
 * Includes recommendations that are practical, personalized, and supported by reliable information.
 
----
-
-## Failure Conditions
-
-A scenario should be considered unsuccessful if one or more of the following conditions occur:
+# Failure Conditions
 
 * The itinerary significantly exceeds the specified travel budget without appropriate justification.
 * Explicit user constraints or requirements are ignored or contradicted.
@@ -140,9 +132,7 @@ A scenario should be considered unsuccessful if one or more of the following con
 * The itinerary contains unrealistic or impractical recommendations that make successful execution unlikely.
 * The agent fails to communicate important trade-offs, assumptions, or limitations when they materially affect the proposed plan.
 
----
-
-## Notes
+# Notes
 
 * This scenario evaluates the initial generation of a travel itinerary and does not assess the agent's ability to adapt to changing user requirements. Adaptability is evaluated in dedicated scenarios.
 * Shopping expenses are intentionally excluded from the travel budget and should not influence budget validation.
