@@ -1,5 +1,4 @@
 ---
-
 benchmark_id: travel-planning-budget
 name: Travel Planning Budget
 agent_type: travel-agent
@@ -7,12 +6,10 @@ profile: travel-agent
 version: 1.0
 difficulty: intermediate
 tags:
-
-* budget
-* itinerary
-* planning
-* personalization
-
+  - budget
+  - itinerary
+  - planning
+  - personalization
 ---
 
 # Description
