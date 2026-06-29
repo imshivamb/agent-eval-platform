@@ -29,3 +29,10 @@ class MapperError(BenchmarkError):
     """Raised when mapping parsed content to a Benchmark dataclass fails."""
 
     pass
+
+
+class EvaluationError(Exception):
+    """Raised when evaluation orchestration or execution fails."""
+
+    pass
+

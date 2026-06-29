@@ -55,6 +55,7 @@ class EvaluationProfile:
 
     name: str
     weights: Dict[str, float]
+    pass_threshold: float = 75.0
 
 
 @dataclass
