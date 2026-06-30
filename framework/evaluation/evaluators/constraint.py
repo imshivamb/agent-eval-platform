@@ -4,7 +4,7 @@ import json
 import yaml
 from framework.models import AgentOutput, Benchmark, DimensionScore
 from framework.evaluation.base import BaseEvaluator
-from framework.evaluation.llm import BaseLLM
+from framework.llms import BaseLLM, Message
 
 
 def _parse_json_response(text: str) -> dict:
@@ -83,18 +83,23 @@ class ConstraintEvaluator(BaseEvaluator):
             f"### Agent Output:\n{output.content}\n"
         )
 
+        messages = [
+            Message(role="system", content=system_instruction),
+            Message(role="user", content=user_prompt),
+        ]
+
+        response_text = ""
         try:
-            response_text = self.llm.generate(
-                user_prompt, system_instruction=system_instruction
-            )
+            response = self.llm.generate(messages)
+            response_text = response.text
             parsed = _parse_json_response(response_text)
             score = float(parsed["score"])
             reason = str(parsed["reason"])
         except Exception as e:
-            score = 0.0
-            reason = (
-                f"Failed to parse LLM evaluation response: {e}. Raw response: {response_text}"
-            )
+            from framework.exceptions import EvaluationError
+            raise EvaluationError(
+                f"Failed to generate or parse LLM evaluation response: {e}. Raw response: {response_text}"
+            ) from e
 
         return DimensionScore(
             dimension="Constraint Satisfaction",
