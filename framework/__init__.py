@@ -10,3 +10,12 @@ from .models import (
     ParsedBenchmark,
 )
 from .parser import parse_benchmark, parse_benchmark_text
+from .evaluation import (
+    BaseEvaluator,
+    EvaluationEngine,
+    BaseLLM,
+    MockLLM,
+    OpenAILLM,
+    GeminiLLM,
+    ConstraintEvaluator,
+)
