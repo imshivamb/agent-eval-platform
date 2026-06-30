@@ -6,6 +6,8 @@ from framework.llms import BaseLLM, MockLLM, OpenAILLM, GeminiLLM
 from framework.evaluation.evaluators import (
     ConstraintEvaluator,
     PlanningQualityEvaluator,
+    PersonalizationEvaluator,
+    AdaptabilityEvaluator,
 )
 from framework.evaluation.evaluators.base_llm import BaseLLMEvaluator
 from framework.evaluation.testing import DummyEvaluator

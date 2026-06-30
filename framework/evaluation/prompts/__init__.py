@@ -6,3 +6,5 @@ from framework.evaluation.prompts.base import (
 )
 from framework.evaluation.prompts.constraint import build_constraint_prompt
 from framework.evaluation.prompts.planning import build_planning_prompt
+from framework.evaluation.prompts.personalization import build_personalization_prompt
+from framework.evaluation.prompts.adaptability import build_adaptability_prompt

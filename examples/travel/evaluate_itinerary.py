@@ -12,6 +12,8 @@ from framework import (
     MockLLM,
     ConstraintEvaluator,
     PlanningQualityEvaluator,
+    PersonalizationEvaluator,
+    AdaptabilityEvaluator,
     DummyEvaluator,
     TRAVEL_PROFILE,
     CONSTRAINT_SATISFACTION,
@@ -48,7 +50,7 @@ def main():
     print("\n=== Step 3: Setting Up Mock LLM Responses for Judges ===")
     # Simulate LLM Judge responses. The MockLLM will return these structured JSON strings.
     mock_responses = [
-        # Constraint Satisfaction JSON response
+        # Constraint Satisfaction JSON response (Call 1)
         """
         ```json
         {
@@ -57,12 +59,30 @@ def main():
         }
         ```
         """,
-        # Planning Quality JSON response
+        # Planning Quality JSON response (Call 2)
         """
         ```json
         {
           "score": 88,
           "reason": "Geographically sensible route (Seoul to Tokyo to Kyoto). Pacing is realistic, though Kyoto could be trimmed slightly."
+        }
+        ```
+        """,
+        # Personalization JSON response (Call 3)
+        """
+        ```json
+        {
+          "score": 92,
+          "reason": "Excellent tailoring. Directly scheduled around the traveler's 4-hour remote work slots, recommended thrift shops in Harajuku, and aligned with walking preferences."
+        }
+        ```
+        """,
+        # Adaptability JSON response (Call 4)
+        """
+        ```json
+        {
+          "score": 80,
+          "reason": "Successfully handled intermediate flight delays and budget reduction of 10,000 INR by shifting from express rail to standard transit, keeping primary sightseeing intact."
         }
         ```
         """,
@@ -75,17 +95,11 @@ def main():
     evaluators = {
         CONSTRAINT_SATISFACTION: ConstraintEvaluator(llm),
         PLANNING_QUALITY: PlanningQualityEvaluator(llm),
+        PERSONALIZATION: PersonalizationEvaluator(llm),
+        ADAPTABILITY: AdaptabilityEvaluator(llm),
         # Using DummyEvaluator from testing package for features not yet backed by real LLM judges
         INFORMATION_ACCURACY: DummyEvaluator(
             INFORMATION_ACCURACY, 85.0, "All attraction facts verified."
-        ),
-        PERSONALIZATION: DummyEvaluator(
-            PERSONALIZATION,
-            90.0,
-            "Thrift shopping recommendations fit the backpacker vibe.",
-        ),
-        ADAPTABILITY: DummyEvaluator(
-            ADAPTABILITY, 75.0, "Baseline adaptability checks passed."
         ),
     }
 
