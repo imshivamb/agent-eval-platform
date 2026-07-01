@@ -18,6 +18,7 @@ from framework import (
     LocalKnowledgeBaseVerifier,
     ClaimExtractor,
     VerificationPipeline,
+    VerificationStatus,
     TRAVEL_PROFILE,
     CONSTRAINT_SATISFACTION,
     PLANNING_QUALITY,
@@ -153,6 +154,28 @@ def main():
     print(
         f"Pass Status:        {'PASS' if result.passed else 'FAIL'} (Threshold: {TRAVEL_PROFILE.pass_threshold})"
     )
+
+    # Run dedicated pipeline call for clean visual console logging report
+    pipeline_llm = MockLLM(responses=[mock_responses[2]])
+    demo_pipeline = VerificationPipeline(ClaimExtractor(pipeline_llm), verifier)
+    report = demo_pipeline.run(agent_output)
+
+    print("\nExtracted Claims & Verifications")
+    print("-----------------------------------------------------------")
+    for ev in report.evidence:
+        status_symbol = "✓" if ev.status == VerificationStatus.VERIFIED else "✗"
+        print(
+            f"{status_symbol} {ev.claim.subject} -> {ev.claim.predicate}: "
+            f"claimed '{ev.claim.value}' (Expected: '{ev.expected_value or 'N/A'}')"
+        )
+    print("-----------------------------------------------------------")
+    print("Verification Summary")
+    print(f"- Verified:  {report.verified_count}")
+    print(f"- Refuted:   {report.refuted_count}")
+    print(f"- Unknown:   {report.unknown_count}")
+    print(f"- Not Found: {report.not_found_count}")
+    print("-----------------------------------------------------------")
+
     print("\nDimension Breakdown:")
     for ds in result.dimension_scores:
         weight = TRAVEL_PROFILE.weights[ds.dimension]
