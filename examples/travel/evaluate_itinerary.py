@@ -26,6 +26,7 @@ from framework import (
     PERSONALIZATION,
     ADAPTABILITY,
 )
+from agents.travel.agent import TravelAgent
 
 
 def main():
@@ -38,22 +39,15 @@ def main():
         print(f"Error parsing scenario: {e}", file=sys.stderr)
         sys.exit(1)
 
-    print("\n=== Step 2: Preparing Mock Agent Output ===")
-    # A travel agent's output that we want to evaluate
-    agent_output = AgentOutput(
-        content=(
-            "29-Day Backpacking Itinerary for Japan and South Korea.\n"
-            "Budget: ₹240,000 (INR) overall.\n"
-            "Route: Seoul (7 days) -> Tokyo (14 days) -> Kyoto (8 days).\n"
-            "Accommodation: Guesthouses and budget hostels throughout."
-        ),
-        metadata={},
-    )
-    print("Agent Output loaded successfully.")
-
-    print("\n=== Step 3: Setting Up Mock LLM Responses for Judges ===")
-    # Simulate LLM Judge responses. The MockLLM will return these structured JSON strings.
+    print("\n=== Step 2: Preparing Travel Agent and LLM responses ===")
+    # Simulate LLM responses. The MockLLM will return these structured strings sequentially.
     mock_responses = [
+        # Call 0: TravelAgent generating the itinerary output
+        "29-Day Backpacking Itinerary for Japan and South Korea.\n"
+        "Budget: ₹240,000 (INR) overall.\n"
+        "Route: Seoul (7 days) -> Tokyo (14 days) -> Kyoto (8 days).\n"
+        "Accommodation: Guesthouses and budget hostels throughout.",
+
         # Call 1: Constraint Satisfaction JSON response
         """
         ```json
@@ -120,7 +114,7 @@ def main():
         """,
     ]
     llm = MockLLM(responses=mock_responses)
-    print("Mock LLM client configured.")
+    print("Mock LLM client and responses configured.")
 
     print("\n=== Step 4: Registering Evaluators & Profiles ===")
     # Initialize verifier, extractor, and pipeline using Dependency Injection
@@ -140,7 +134,13 @@ def main():
     engine = EvaluationEngine(evaluators=evaluators)
     print(f"EvaluationEngine initialized with {len(evaluators)} evaluators.")
 
-    print("\n=== Step 5: Executing Evaluation Engine ===")
+    # Instantiate real travel agent and plan trip dynamically
+    agent = TravelAgent(llm)
+    print("\n=== Step 5: Executing Travel Agent to plan trip ===")
+    agent_output = agent.plan_trip(benchmark.prompt)
+    print(f"Generated Itinerary (first 100 chars): {agent_output.content[:100]}...")
+
+    print("\n=== Step 6: Executing Evaluation Engine ===")
     try:
         result = engine.evaluate(benchmark, agent_output, TRAVEL_PROFILE)
     except Exception as e:
@@ -156,7 +156,7 @@ def main():
     )
 
     # Run dedicated pipeline call for clean visual console logging report
-    pipeline_llm = MockLLM(responses=[mock_responses[2]])
+    pipeline_llm = MockLLM(responses=[mock_responses[3]])
     demo_pipeline = VerificationPipeline(ClaimExtractor(pipeline_llm), verifier)
     report = demo_pipeline.run(agent_output)
 
