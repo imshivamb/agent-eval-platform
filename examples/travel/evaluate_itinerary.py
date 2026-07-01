@@ -26,7 +26,7 @@ from framework import (
     PERSONALIZATION,
     ADAPTABILITY,
 )
-from agents.travel.agent import TravelAgent
+from agents.travel import TravelPlanningAgent
 
 
 def main():
@@ -135,9 +135,9 @@ def main():
     print(f"EvaluationEngine initialized with {len(evaluators)} evaluators.")
 
     # Instantiate real travel agent and plan trip dynamically
-    agent = TravelAgent(llm)
+    agent = TravelPlanningAgent(llm)
     print("\n=== Step 5: Executing Travel Agent to plan trip ===")
-    agent_output = agent.plan_trip(benchmark.prompt)
+    agent_output = agent.run(benchmark.prompt)
     print(f"Generated Itinerary (first 100 chars): {agent_output.content[:100]}...")
 
     print("\n=== Step 6: Executing Evaluation Engine ===")

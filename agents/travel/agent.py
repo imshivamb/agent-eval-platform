@@ -1,24 +1,26 @@
-"""Real travel agent implementation for generating itineraries."""
+"""Travel planning agent implementation for generating itineraries."""
 
 from framework.llms import BaseLLM, Message
 from framework.models import AgentOutput
+from agents.base import BaseAgent
+from .prompts import TRAVEL_PLANNING_SYSTEM_PROMPT
 
 
-class TravelAgent:
+class TravelPlanningAgent(BaseAgent):
     """A travel planning assistant agent powered by an LLM.
 
     Accepts user prompts/scenarios and plans itineraries accordingly.
     """
 
     def __init__(self, llm: BaseLLM):
-        """Initializes the TravelAgent.
+        """Initializes the TravelPlanningAgent.
 
         Args:
             llm: The LLM client wrapper to generate itineraries.
         """
         self.llm = llm
 
-    def plan_trip(self, prompt: str) -> AgentOutput:
+    def run(self, prompt: str) -> AgentOutput:
         """Generates a travel itinerary based on user preferences.
 
         Args:
@@ -27,24 +29,18 @@ class TravelAgent:
         Returns:
             An AgentOutput containing the planned travel itinerary.
         """
-        system_instruction = (
-            "You are a professional travel agent assistant.\n"
-            "Your task is to plan a detailed, well-structured travel itinerary "
-            "based on the user's preferences, budget limits, duration, backpacking style, "
-            "and other specified constraints.\n"
-            "Be precise, geographically efficient, and mention exact travel logistics, closed days, and pricing "
-            "where appropriate."
-        )
-
         messages = [
-            Message(role="system", content=system_instruction),
+            Message(role="system", content=TRAVEL_PLANNING_SYSTEM_PROMPT),
             Message(role="user", content=prompt),
         ]
 
-        try:
-            response = self.llm.generate(messages)
-            content = response.text
-        except Exception as e:
-            content = f"Failed to generate travel itinerary: {e}"
+        # Let any generation exceptions propagate to caller/framework handlers
+        response = self.llm.generate(messages)
 
-        return AgentOutput(content=content, metadata={"model": type(self.llm).__name__})
+        return AgentOutput(
+            content=response.text,
+            metadata={
+                "agent": "travel-planner",
+                "llm": type(self.llm).__name__,
+            },
+        )
