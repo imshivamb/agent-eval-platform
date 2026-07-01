@@ -36,34 +36,6 @@ INFORMATION_ACCURACY_RUBRIC = (
 )
 
 
-def format_evidence_report(report: VerificationReport) -> str:
-    """Formats verification report evidence metrics and findings into a readable string."""
-    evidence_lines = []
-    evidence_lines.append(f"Verification Summary:")
-    evidence_lines.append(f"- Total Claims Extracted: {report.total_claims}")
-    evidence_lines.append(f"- Verified: {report.verified_count}")
-    evidence_lines.append(f"- Refuted: {report.refuted_count}")
-    evidence_lines.append(f"- Unknown Predicates: {report.unknown_count}")
-    evidence_lines.append(f"- Not Found Subjects: {report.not_found_count}\n")
-    evidence_lines.append(f"Detailed Findings:")
-
-    if not report.evidence:
-        evidence_lines.append("No testable factual claims were extracted or verified.")
-    else:
-        for idx, ev in enumerate(report.evidence):
-            line = (
-                f"- Claim {idx+1}: {ev.claim.subject} -> {ev.claim.predicate}: {ev.claim.value} "
-                f"(Type: {ev.claim.claim_type.value})\n"
-                f"  Status: {ev.status.value.upper()}\n"
-                f"  Expected: {ev.expected_value or 'N/A'}, Actual: {ev.actual_value or 'N/A'}\n"
-                f"  Source: {ev.source} (Confidence: {ev.confidence})\n"
-                f"  Reason: {ev.reason or 'N/A'}"
-            )
-            evidence_lines.append(line)
-
-    return "\n".join(evidence_lines)
-
-
 def build_information_accuracy_prompt(
     benchmark: Benchmark,
     output: AgentOutput,
@@ -87,7 +59,7 @@ def build_information_accuracy_prompt(
         f"{JSON_RESPONSE_SCHEMA}"
     )
 
-    evidence_context = format_evidence_report(report)
+    evidence_context = report.to_markdown()
 
     user_prompt = (
         f"VERIFICATION EVIDENCE FINDINGS:\n"
@@ -104,3 +76,4 @@ def build_information_accuracy_prompt(
         Message(role="system", content=system_instruction),
         Message(role="user", content=user_prompt),
     ]
+

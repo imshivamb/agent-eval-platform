@@ -6,7 +6,7 @@ from typing import Any, Dict
 from framework.exceptions import KnowledgeBaseLoadError
 from .base import BaseVerifier
 from .models import Claim, Evidence, VerificationStatus
-from .utils import normalize_key
+from .utils import normalize_key, values_are_equivalent
 
 
 class LocalKnowledgeBaseVerifier(BaseVerifier):
@@ -103,7 +103,7 @@ class LocalKnowledgeBaseVerifier(BaseVerifier):
         actual_val = claim.value
 
         # 3. Value check
-        if normalize_key(expected_val) == normalize_key(actual_val):
+        if values_are_equivalent(expected_val, actual_val):
             status = VerificationStatus.VERIFIED
             reason_str = f"Factual claim matches ground-truth record for '{claim.subject}' ('{claim.predicate}' = '{expected_val}')."
         else:

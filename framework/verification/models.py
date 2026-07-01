@@ -82,3 +82,31 @@ class VerificationReport:
         return sum(
             1 for e in self.evidence if e.status == VerificationStatus.NOT_FOUND
         )
+
+    def to_markdown(self) -> str:
+        """Formats verification report evidence metrics and findings into a markdown string."""
+        evidence_lines = []
+        evidence_lines.append("Verification Summary:")
+        evidence_lines.append(f"- Total Claims Extracted: {self.total_claims}")
+        evidence_lines.append(f"- Verified: {self.verified_count}")
+        evidence_lines.append(f"- Refuted: {self.refuted_count}")
+        evidence_lines.append(f"- Unknown Predicates: {self.unknown_count}")
+        evidence_lines.append(f"- Not Found Subjects: {self.not_found_count}\n")
+        evidence_lines.append("Detailed Findings:")
+
+        if not self.evidence:
+            evidence_lines.append("No testable factual claims were extracted or verified.")
+        else:
+            for idx, ev in enumerate(self.evidence):
+                line = (
+                    f"- Claim {idx+1}: {ev.claim.subject} -> {ev.claim.predicate}: {ev.claim.value} "
+                    f"(Type: {ev.claim.claim_type.value})\n"
+                    f"  Status: {ev.status.value.upper()}\n"
+                    f"  Expected: {ev.expected_value or 'N/A'}, Actual: {ev.actual_value or 'N/A'}\n"
+                    f"  Source: {ev.source} (Confidence: {ev.confidence})\n"
+                    f"  Reason: {ev.reason or 'N/A'}"
+                )
+                evidence_lines.append(line)
+
+        return "\n".join(evidence_lines)
+
