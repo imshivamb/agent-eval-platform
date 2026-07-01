@@ -40,7 +40,7 @@ class TravelPlanningAgent(BaseAgent):
         return AgentOutput(
             content=response.text,
             metadata={
-                "agent": "travel-planner",
+                "agent": self.__class__.__name__,
                 "llm": type(self.llm).__name__,
             },
         )
