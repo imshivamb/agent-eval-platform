@@ -14,7 +14,10 @@ from framework import (
     PlanningQualityEvaluator,
     PersonalizationEvaluator,
     AdaptabilityEvaluator,
-    DummyEvaluator,
+    InformationAccuracyEvaluator,
+    LocalKnowledgeBaseVerifier,
+    ClaimExtractor,
+    VerificationPipeline,
     TRAVEL_PROFILE,
     CONSTRAINT_SATISFACTION,
     PLANNING_QUALITY,
@@ -50,7 +53,7 @@ def main():
     print("\n=== Step 3: Setting Up Mock LLM Responses for Judges ===")
     # Simulate LLM Judge responses. The MockLLM will return these structured JSON strings.
     mock_responses = [
-        # Constraint Satisfaction JSON response (Call 1)
+        # Call 1: Constraint Satisfaction JSON response
         """
         ```json
         {
@@ -59,7 +62,7 @@ def main():
         }
         ```
         """,
-        # Planning Quality JSON response (Call 2)
+        # Call 2: Planning Quality JSON response
         """
         ```json
         {
@@ -68,7 +71,35 @@ def main():
         }
         ```
         """,
-        # Personalization JSON response (Call 3)
+        # Call 3: Information Accuracy - Claim Extraction LLM Output
+        """
+        ```json
+        [
+          {
+            "subject": "gyeongbokgung",
+            "predicate": "closed_days",
+            "value": "Tuesday",
+            "claim_type": "timing"
+          },
+          {
+            "subject": "teamlab_planets",
+            "predicate": "exists",
+            "value": "true",
+            "claim_type": "existence"
+          }
+        ]
+        ```
+        """,
+        # Call 4: Information Accuracy - Final Evidence Grading LLM Output
+        """
+        ```json
+        {
+          "score": 98,
+          "reason": "All extracted factual claims (Gyeongbokgung closing days, TeamLab Planets existence) were verified against ground-truth authoritative records."
+        }
+        ```
+        """,
+        # Call 5: Personalization JSON response
         """
         ```json
         {
@@ -77,7 +108,7 @@ def main():
         }
         ```
         """,
-        # Adaptability JSON response (Call 4)
+        # Call 6: Adaptability JSON response
         """
         ```json
         {
@@ -91,16 +122,18 @@ def main():
     print("Mock LLM client configured.")
 
     print("\n=== Step 4: Registering Evaluators & Profiles ===")
+    # Initialize verifier, extractor, and pipeline using Dependency Injection
+    verifier = LocalKnowledgeBaseVerifier("ground_truth/japan_demo.json")
+    extractor = ClaimExtractor(llm)
+    pipeline = VerificationPipeline(extractor, verifier)
+
     # Registering evaluators corresponding to the TRAVEL_PROFILE dimensions using standard constants
     evaluators = {
         CONSTRAINT_SATISFACTION: ConstraintEvaluator(llm),
         PLANNING_QUALITY: PlanningQualityEvaluator(llm),
+        INFORMATION_ACCURACY: InformationAccuracyEvaluator(llm, pipeline),
         PERSONALIZATION: PersonalizationEvaluator(llm),
         ADAPTABILITY: AdaptabilityEvaluator(llm),
-        # Using DummyEvaluator from testing package for features not yet backed by real LLM judges
-        INFORMATION_ACCURACY: DummyEvaluator(
-            INFORMATION_ACCURACY, 85.0, "All attraction facts verified."
-        ),
     }
 
     engine = EvaluationEngine(evaluators=evaluators)

@@ -5,5 +5,9 @@ from framework.verification.models import (
     VerificationStatus,
     Claim,
     Evidence,
+    VerificationReport,
 )
 from framework.verification.base import BaseVerifier
+from framework.verification.local import LocalKnowledgeBaseVerifier
+from framework.verification.extractor import ClaimExtractor
+from framework.verification.pipeline import VerificationPipeline

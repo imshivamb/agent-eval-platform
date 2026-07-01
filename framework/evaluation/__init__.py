@@ -8,6 +8,7 @@ from framework.evaluation.evaluators import (
     PlanningQualityEvaluator,
     PersonalizationEvaluator,
     AdaptabilityEvaluator,
+    InformationAccuracyEvaluator,
 )
 from framework.evaluation.evaluators.base_llm import BaseLLMEvaluator
 from framework.evaluation.testing import DummyEvaluator

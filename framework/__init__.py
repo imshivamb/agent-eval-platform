@@ -18,6 +18,7 @@ from .evaluation import (
     PlanningQualityEvaluator,
     PersonalizationEvaluator,
     AdaptabilityEvaluator,
+    InformationAccuracyEvaluator,
     DummyEvaluator,
     CONSTRAINT_SATISFACTION,
     PLANNING_QUALITY,
@@ -39,5 +40,9 @@ from .verification import (
     VerificationStatus,
     Claim,
     Evidence,
+    VerificationReport,
     BaseVerifier,
+    LocalKnowledgeBaseVerifier,
+    ClaimExtractor,
+    VerificationPipeline,
 )

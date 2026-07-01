@@ -36,3 +36,14 @@ class EvaluationError(Exception):
 
     pass
 
+
+class VerificationError(EvaluationError):
+    """Base class for factual claim verification errors."""
+
+    pass
+
+
+class KnowledgeBaseLoadError(VerificationError):
+    """Raised when loading or parsing a verifier knowledge base fails."""
+
+    pass

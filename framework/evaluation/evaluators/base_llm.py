@@ -7,6 +7,7 @@ from framework.evaluation.base import BaseEvaluator
 from framework.exceptions import EvaluationError
 from framework.models import AgentOutput, Benchmark, DimensionScore
 from framework.llms import BaseLLM, Message
+from ...utils import parse_json_markdown
 
 
 class BaseLLMEvaluator(BaseEvaluator):
@@ -59,14 +60,10 @@ class BaseLLMEvaluator(BaseEvaluator):
         Raises:
             ValueError: If parsing fails.
         """
-        cleaned = text.strip()
-        if cleaned.startswith("```json"):
-            cleaned = cleaned[7:]
-        elif cleaned.startswith("```"):
-            cleaned = cleaned[3:]
-        if cleaned.endswith("```"):
-            cleaned = cleaned[:-3]
-        return json.loads(cleaned.strip())
+        parsed = parse_json_markdown(text)
+        if not isinstance(parsed, dict):
+            raise ValueError(f"Expected JSON dictionary, got: {type(parsed)}")
+        return parsed
 
     def evaluate(
         self,

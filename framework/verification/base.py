@@ -1,7 +1,8 @@
 """Base interface for factual claims verifiers."""
 
 from abc import ABC, abstractmethod
-from framework.verification.models import Claim, Evidence
+from typing import List
+from .models import Claim, Evidence
 
 
 class BaseVerifier(ABC):
@@ -18,3 +19,14 @@ class BaseVerifier(ABC):
             An Evidence dataclass containing the outcome status and source reference.
         """
         pass
+
+    def verify_all(self, claims: List[Claim]) -> List[Evidence]:
+        """Batch verifies a list of claims sequentially.
+
+        Args:
+            claims: The list of claims to verify.
+
+        Returns:
+            A list of Evidence outcomes.
+        """
+        return [self.verify(c) for c in claims]

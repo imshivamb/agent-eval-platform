@@ -1,0 +1,12 @@
+{
+  "teamlab_planets": {
+    "exists": "true",
+    "city": "Tokyo"
+  },
+  "gyeongbokgung": {
+    "closed_days": "Tuesday"
+  },
+  "jr_tokyo_kyoto": {
+    "duration_minutes": "135"
+  }
+}
